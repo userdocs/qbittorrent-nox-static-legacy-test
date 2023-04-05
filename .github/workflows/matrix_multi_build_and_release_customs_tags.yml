@@ -42,9 +42,6 @@ jobs:
         #     riscv64,
         #   ]
         arch_type: [armhf, armv7, aarch64, x86_64, x86]
-        qbittorrent_tag: ["-qt release-4.3.9"]
-        libtorrent_version: ["1.2"]
-        build_tool: [""]
 
     name: "${{ matrix.arch_type }}-libtorrent-v1.2"
 
@@ -80,16 +77,22 @@ jobs:
 
       - name: Host - Create Docker template env file
         run: |
-          echo "qbt_build_tool=qmake" > env.custom
-          echo "qbt_cross_name=${{ matrix.arch_type }}" >> env.custom
-          echo "qbt_libtorrent_version=1.2" >> env.custom
+          echo "qbt_libtorrent_version=1.2" > env.custom
           echo "qbt_qt_version=5" >> env.custom
-          echo "qbt_patches_url=${{ github.repository }}" >> env.custom
-          echo "qbt_workflow_files=yes" >> env.custom
+          echo "qbt_build_tool=qmake" >> env.custom
+          echo "qbt_cross_name=default" >> env.custom
+          echo "qbt_patches_url=userdocs/qbittorrent-nox-static-legacy" >> env.custom
+          echo "qbt_skip_icu=no" >> env.custom
+          echo "qbt_boost_tag=" >> env.custom
+          echo "echo "qbt_libtorrent_tag=" >> env.custom
+          echo "qbt_qt_tag=" >> env.custom
+          echo "qbt_qbittorrent_tag=release-4.3.9" >> env.custom
           echo "qbt_libtorrent_master_jamfile=no" >> env.custom
+          echo "qbt_workflow_files=yes" >> env.custom
+          echo "qbt_workflow_artifacts=no" >> env.custom
+          echo "qbt_cache_dir= >> env.custom
           echo "qbt_optimise_strip=yes" >> env.custom
-          echo "qbt_revision_url=${{ github.repository }}" >> env.custom
-          echo "qbt_workflow_type=legacy" >> env.custom
+          echo "qbt_build_debug=no" >> env.custom
 
       - name: Host - Create docker multiarch container
         run: docker run --name multiarch -it -d --env-file env.custom -w /root -v ${{ github.workspace }}:/root ${{ matrix.os_id }}:${{ matrix.os_version_id }}
@@ -172,7 +175,7 @@ jobs:
   publish_draft:
     if: needs.build.outputs.draft_status == 'true'
     name: Publish draft release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: build
     steps:
       - uses: eregon/publish-release@v1
@@ -184,7 +187,7 @@ jobs:
   publish_revision:
     if: needs.build.outputs.draft_status == 'false'
     name: Publish revision info
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: build
     env:
       revision_url: "https://github.com/${{ github.repository }}/releases/download/${{ needs.build.outputs.release_tag }}/dependency-version.json"
@@ -218,7 +221,7 @@ jobs:
   rerun-on-failure:
     if: failure() && inputs.skip_rerun == '0'
     name: rerun-on-failure
-    needs: release
+    needs: publish_revision
     permissions:
       actions: write
     runs-on: ubuntu-latest
