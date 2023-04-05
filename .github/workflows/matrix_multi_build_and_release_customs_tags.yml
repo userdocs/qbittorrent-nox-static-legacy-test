@@ -225,7 +225,7 @@ jobs:
   rerun-on-failure:
     if: failure() && inputs.skip_rerun == '0'
     name: rerun-on-failure
-    needs: publish_revision
+    needs: [publish_revision,publish_draft]
     permissions:
       actions: write
     runs-on: ubuntu-latest
