@@ -157,6 +157,9 @@ jobs:
               echo "draft_status=true" >> $GITHUB_OUTPUT
           fi
 
+      - name: Docker -  ${{ env.build_dir }}/release_info/dependency-version.json
+        run: docker exec -w /root/${{ env.build_dir }}/release_info mv -f *-dependency-version.json dependency-version.json
+
       - name: Host - Create release - tag - assets
         id: release_id
         uses: ncipollo/release-action@v1
