@@ -50,7 +50,7 @@ jobs:
     name: "${{ matrix.arch_type }}-qbittorent-nox-legacy"
 
     env:
-      build_dir: "qbt-build"
+      qbt_build_dir: "qbt-build"
       name: "${{ matrix.arch_type }}-libtorrent-v1.2"
       draft_status: true
     outputs:
@@ -139,18 +139,18 @@ jobs:
         run: docker exec -w /root multiarch bash qbittorrent-nox-static.sh qbittorrent
 
       - name: Docker - Set release asset name
-        run: docker exec -w /root/${{ env.build_dir }}/completed multiarch mv -f qbittorrent-nox ${{ matrix.arch_type }}-qbittorrent-nox
+        run: docker exec -w /root/${{ env.qbt_build_dir }}/completed multiarch mv -f qbittorrent-nox ${{ matrix.arch_type }}-qbittorrent-nox
 
       - name: Docker - Release Info
-        run: docker exec -w /root/${{ env.build_dir }}/release_info multiarch bash -c 'mv *.md *.json '/root/${{ env.build_dir }}/completed''
+        run: docker exec -w /root/${{ env.qbt_build_dir }}/release_info multiarch bash -c 'mv *.md *.json '/root/${{ env.qbt_build_dir }}/completed''
 
       - name: Host - Upload libtorrent-${{ matrix.arch_type }}-qbittorrent-nox and release info artifact
         uses: actions/upload-artifact@v3
         with:
           name: libtorrent-${{ matrix.arch_type }}-qbittorrent-nox
           path: |
-            ${{ env.build_dir }}/completed/*
-            !${{ env.build_dir }}/completed/*.png
+            ${{ env.qbt_build_dir }}/completed/*
+            !${{ env.qbt_build_dir }}/completed/*.png
 
   release:
     runs-on: ubuntu-latest
@@ -162,7 +162,7 @@ jobs:
     name: "Publish release libtorrent-v${{ matrix.libtorrent_version }}"
 
     env:
-      build_dir: "qbt-build"
+      qbt_build_dir: "qbt-build"
 
     steps:
       - name: Checkout
