@@ -136,6 +136,9 @@ jobs:
       - name: Docker - Set release asset name
         run: docker exec -w /root/${{ env.build_dir }}/completed multiarch mv -f qbittorrent-nox ${{ matrix.arch_type }}-qbittorrent-nox
 
+      - name: Docker - qt5-dependency-version.json to dependency-version.json
+        run: docker exec -w /root/${{ env.build_dir }}/release_info multiarch mv -f qt5-dependency-version.json dependency-version.json
+
       - name: Host - Bootstrap release tag
         id: release_tag
         run: |
@@ -156,9 +159,6 @@ jobs:
           else
               echo "draft_status=true" >> $GITHUB_OUTPUT
           fi
-
-      - name: Docker -  ${{ env.build_dir }}/release_info/dependency-version.json
-        run: docker exec -w /root/${{ env.build_dir }}/release_info mv -f *-dependency-version.json dependency-version.json
 
       - name: Host - Create release - tag - assets
         id: release_id
