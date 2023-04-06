@@ -80,7 +80,7 @@ jobs:
           printf '%s\n' "qbt_libtorrent_version=1.2" > env.custom
           printf '%s\n' "qbt_qt_version=5" >> env.custom
           printf '%s\n' "qbt_build_tool=qmake" >> env.custom
-          # printf '%s\n' "qbt_cross_name=default" >> env.custom
+          # printf '%s\n' "qbt_cross_name=${{ matrix.arch_type }}" >> env.custom
           printf '%s\n' "qbt_patches_url=${{ github.repository }}" >> env.custom
           printf '%s\n' "qbt_skip_icu=no" >> env.custom
           # printf '%s\n' "qbt_boost_tag=" >> env.custom
@@ -147,7 +147,6 @@ jobs:
           path: |
             ${{ env.build_dir }}/completed/*
             !${{ env.build_dir }}/completed/*.png
-
 
   release:
     runs-on: ubuntu-latest
