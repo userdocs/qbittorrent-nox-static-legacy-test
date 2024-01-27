@@ -204,10 +204,10 @@ jobs:
         qbt_libtorrent_version: ["1.2"]
         include:
           - qbt_libtorrent_version: "1.2"
-            preview_release: true
+            preview_release: false
 
           # - qbt_libtorrent_version: "2.0"
-          #   preview_release: false
+          #   preview_release: true
 
     name: "Publish release libtorrent-v${{ matrix.qbt_libtorrent_version }}"
 
