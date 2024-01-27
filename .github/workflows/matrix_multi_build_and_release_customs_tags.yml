@@ -108,7 +108,7 @@ jobs:
           printf '%s\n' "qbt_libtorrent_master_jamfile=no" >> env.custom
           printf '%s\n' "qbt_workflow_files=yes" >> env.custom
           printf '%s\n' "qbt_workflow_artifacts=no" >> env.custom
-          printf '%s\n' "qbt_cache_dir= >> env.custom
+          printf '%s\n' "qbt_cache_dir=" >> env.custom
           printf '%s\n' "qbt_optimise_strip=yes" >> env.custom
           printf '%s\n' "qbt_build_debug=no" >> env.custom
           printf '%s\n' "qbt_revision_url=${{ github.repository }}" >> env.custom
