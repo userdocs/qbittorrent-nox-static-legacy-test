@@ -249,19 +249,23 @@ jobs:
             for release in 1\.2/*-release.md; do
               [[ -f "${release}" ]] && release+=("${release}")
             done
+
+            for dependency_version in 1\.2/*-dependency-version.json; do
+              [[ -f "${dependency_version}" ]] && dependency_version+=("${dependency_version}")
+            done
           fi
 
           if [[ ${{ matrix.qbt_libtorrent_version }} == "2.0" ]]; then
             for release in 2\.0/*-release.md; do
               [[ -f "${release}" ]] && release+=("${release}")
             done
+
+            for dependency_version in 2\.0/*-dependency-version.json; do
+              [[ -f "${dependency_version}" ]] && dependency_version+=("${dependency_version}")
+            done
           fi
 
           readarray -t release_sorted < <(printf '%s\n' "${release[@]}" | sort)
-
-          for dependency_version in 1\.2/*-dependency-version.json 2\.0/*-dependency-version.json; do
-            [[ -f "${dependency_version}" ]] && dependency_version+=("${dependency_version}")
-          done
 
           readarray -t dependency_version_sorted < <(printf '%s\n' "${dependency_version[@]}" | sort)
 
