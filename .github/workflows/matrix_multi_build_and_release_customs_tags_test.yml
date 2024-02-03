@@ -161,6 +161,10 @@ jobs:
       # - name: Docker - qbittorrent
       #   run: docker exec -w /root multiarch bash qbittorrent-nox-static.sh qbittorrent
 
+      - name: Docker - test stuff
+        if: env.disable_qt5 != 'yes' # When qBittorrent v5 is released, remove this
+        run: docker exec -w /root/${{ env.qbt_build_dir }}/release_info multiarch mkdir -p /root/${{ env.qbt_build_dir }}/completed
+
       - name: Host - qBittorrent v5 transition
         run: |
           # When qBittorrent v5 is released, remove this
