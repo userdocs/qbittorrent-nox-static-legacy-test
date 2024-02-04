@@ -262,8 +262,8 @@ jobs:
 
           readarray -t release_sorted < <(printf '%s\n' "${release[@]}" | sort)
 
-          for dependency_version in 1\.2/*-dependency-version.json 2\.0/*-dependency-version.json; do
-            [[ -f "${dependency_version}" ]] && dependency_version+=("${dependency_version}")
+          for dependency_version_files in 1\.2/*-dependency-version.json 2\.0/*-dependency-version.json; do
+            [[ -f "${dependency_version_files}" ]] && dependency_version+=("${dependency_version_files}")
           done
 
           readarray -t dependency_version_sorted < <(printf '%s\n' "${dependency_version[@]}" | sort)
