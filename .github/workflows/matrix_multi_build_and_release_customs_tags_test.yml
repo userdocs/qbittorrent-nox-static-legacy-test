@@ -273,8 +273,6 @@ jobs:
 
           ./pandoc --wrap=preserve -f gfm tmp-release.md -t gfm -o release.md
 
-          printf '%s\n' "${dependency_version_sorted[@]}"
-
       - name: Host - Bootstrap release tag
         run: printf '%s\n' "release_tag=$(cat ${{ matrix.qbt_libtorrent_version }}/tag.md)" >> $GITHUB_ENV
 
