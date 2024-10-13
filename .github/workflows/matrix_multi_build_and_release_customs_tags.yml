@@ -18,6 +18,11 @@ on:
         type: choice
         options: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -49,11 +54,11 @@ jobs:
             "riscv64",
           ]
         qbt_libtorrent_version: ["1.2"]
-        qbt_build_tool: [""]
+        qbt_build_tool: ["qmake"]
         # qbt_boost_tag: [boost-1.84.0]
         qbt_qbittorrent_tag: ["release-4.3.9"]
         include:
-          - qbt_build_tool: ""
+          - qbt_build_tool: "qmake"
             qbt_qt_version_name: ""
             qbt_qt_version: "5"
             # qbt_qt_tag: "v5.15.11-lts-lgpl"
@@ -80,19 +85,14 @@ jobs:
       - name: Host - phased updates
         run: printf '%s\n' 'APT::Get::Always-Include-Phased-Updates "false";' | sudo tee /etc/apt/apt.conf.d/99-phased-updates
 
-      - name: Host - set up lunar repo -t lunar
-        run: |
-          printf '%b\n' 'Package: *\nPin: release n=lunar\nPin-Priority: 50' | sudo tee /etc/apt/preferences
-          printf '%b\n' 'deb http://archive.ubuntu.com/ubuntu/ lunar main universe restricted' | sudo tee /etc/apt/sources.list.d/lunar.list
-
       - name: Host - update
         run: sudo apt-get update
 
       - name: Host - upgrade
         run: sudo apt-get -y upgrade
 
-      - name: Host - set up qemu-user-static binfmt-support from lunar
-        run: sudo apt install -t lunar libpipeline1 qemu-user-static binfmt-support
+      - name: Host - set up qemu-user-static binfmt-support
+        run: sudo apt install libpipeline1 qemu-user-static binfmt-support
 
       - name: Host - Create Docker template env file
         run: |
@@ -172,6 +172,11 @@ jobs:
       - name: Docker - Set release asset name
         if: env.disable_qt5 != 'yes' # When qBittorrent v5 is released, remove this
         run: docker exec -w /root/${{ env.qbt_build_dir }}/completed multiarch mv -f qbittorrent-nox ${{ matrix.qbt_cross_name }}-${{ matrix.qbt_qt_version_name }}qbittorrent-nox
+
+      - name: Generate artifact attestation  ${{ github.event.inputs.distinct_id }}
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "${{ env.qbt_build_dir }}/completed/${{ matrix.qbt_cross_name }}-${{ matrix.qbt_qt_version_name }}qbittorrent-nox"
 
       - name: Docker - Release Info
         if: env.disable_qt5 != 'yes' # When qBittorrent v5 is released, remove this
