@@ -86,6 +86,11 @@ jobs:
       - name: Host - set up qemu-user-static binfmt-support ${{ inputs.distinct_id }}
         run: sudo apt install libpipeline1 qemu-user-static binfmt-support
 
+      - name: Download qbt-nox-static.bash
+        run: |
+          curl -LO https://raw.githubusercontent.com/userdocs/qbittorrent-nox-static-test/refs/heads/main/qbt-nox-static.bash
+          chmod +x qbt-nox-static.bash
+
       - name: Host - Create Docker template env file ${{ inputs.distinct_id }}
         env:
           set_skip_icu: ${{ inputs.icu }}
