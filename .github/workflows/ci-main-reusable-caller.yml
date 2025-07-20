@@ -7,7 +7,7 @@ on:
       script_name:
         description: "Which script to run?"
         required: true
-        default: "qbittorrent-nox-static.sh"
+        default: "qbt-nox-static.bash"
         type: choice
         options: ["qbt-nox-static.bash", "qbittorrent-nox-static.sh"]
       debian-build:
