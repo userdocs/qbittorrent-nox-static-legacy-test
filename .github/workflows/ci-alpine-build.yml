@@ -75,17 +75,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Host - phased updates ${{ inputs.distinct_id }}
-        run: printf '%s\n' 'APT::Get::Always-Include-Phased-Updates "false";' | sudo tee /etc/apt/apt.conf.d/99-phased-updates
-
-      - name: Host - update ${{ inputs.distinct_id }}
-        run: sudo apt-get update
-
-      # - name: Host - upgrade ${{ inputs.distinct_id }}
-      #   run: sudo apt-get -y upgrade
-
-        run: sudo apt install libpipeline1 qemu-user-static binfmt-support
-
       - name: Download qbt-nox-static.bash
         run: |
           curl -LO https://raw.githubusercontent.com/userdocs/qbittorrent-nox-static-test/refs/heads/main/qbt-nox-static.bash
@@ -95,6 +84,7 @@ jobs:
         run: |
           printf '%s\n' "qbt_revision_url=${{ github.repository }}" > env.custom
           printf '%s\n' "qbt_zlib_type=zlib" >> env.custom
+          # printf '%s\n' "qbt_zlib_type=zlib" >> env.custom
           printf '%s\n' "qbt_skip_icu=${set_skip_icu}" >> env.custom
           printf '%s\n' "qbt_boost_tag=${{ matrix.qbt_boost_tag }}" >> env.custom
           printf '%s\n' "qbt_libtorrent_version=${{ matrix.qbt_libtorrent_version }}" >> env.custom
@@ -147,7 +137,7 @@ jobs:
 
       - name: Host - set up qemu-user-static binfmt-support ${{ inputs.distinct_id }}
         if: env.disable_qt5 != 'yes'
-        run: sudo apt install libpipeline1 qemu-user-static binfmt-support
+        run: sudo apt install qemu-user-static binfmt-support
 
       - name: Host - Create docker ${{ env.multiarch }} container ${{ inputs.distinct_id }}
         if: env.disable_qt5 != 'yes'
