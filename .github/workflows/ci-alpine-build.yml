@@ -26,7 +26,7 @@ on:
         type: string
 jobs:
   build-alpine:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     strategy:
       fail-fast: false
       matrix:
@@ -84,7 +84,6 @@ jobs:
         run: |
           printf '%s\n' "qbt_revision_url=${{ github.repository }}" > env.custom
           printf '%s\n' "qbt_zlib_type=zlib" >> env.custom
-          # printf '%s\n' "qbt_zlib_type=zlib" >> env.custom
           printf '%s\n' "qbt_skip_icu=${set_skip_icu}" >> env.custom
           printf '%s\n' "qbt_boost_tag=${{ matrix.qbt_boost_tag }}" >> env.custom
           printf '%s\n' "qbt_libtorrent_version=${{ matrix.qbt_libtorrent_version }}" >> env.custom
@@ -125,22 +124,18 @@ jobs:
           fi
 
       - name: Host - phased updates ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: printf '%s\n' 'APT::Get::Always-Include-Phased-Updates "false";' | sudo tee /etc/apt/apt.conf.d/99-phased-updates
 
       - name: Host - update ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: sudo apt-get update
 
       # - name: Host - upgrade ${{ inputs.distinct_id }}
       #   run: sudo apt-get -y upgrade
 
       - name: Host - set up qemu-user-static binfmt-support ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: sudo apt install qemu-user-static binfmt-support
 
       - name: Host - Create docker ${{ env.multiarch }} container ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: |
           # We create an Alpine edge container for cross-compilation with a user named gh which has same id as runner 1001 and provide sudo access
           # This way we can run commands as a non-root user, avoiding permission issues on host runner. Switching between user and root as needed.
@@ -151,47 +146,37 @@ jobs:
           docker exec ${container_name} sh -c 'printf "%s" "gh ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/gh'
 
       - name: Host - patches ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: mkdir -p ${qbt_build_dir}/patches && cp -r patches/* ${qbt_build_dir}/patches/
 
       - name: Docker - apk update ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec ${container_name} apk update
 
       - name: Docker - apk install bash ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec ${container_name} apk add bash
 
       - name: Docker - Bootstrap test tools ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec ${container_name} bash ${script_name} bootstrap_deps
 
       - name: Docker - Bootstrap build ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} -bs-a
 
       - name: Docker - zlib-ng ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} zlib
 
       - name: Docker - iconv ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} iconv
 
       - name: Docker - icu ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes' && env.set_skip_icu == 'no'
+        if: env.set_skip_icu == 'no'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} icu
 
       - name: Docker - openssl ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} openssl
 
       - name: Docker - boost ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} boost
 
       - name: Docker - libtorrent ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} libtorrent
 
       - name: Docker - double_conversion ${{ inputs.distinct_id }}
@@ -199,29 +184,23 @@ jobs:
         run: docker exec -u gh:gh ${container_name} bash ${script_name} double_conversion
 
       - name: Docker - qtbase ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} qtbase
 
       - name: Docker - qttools ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} qttools
 
       - name: Docker - qbittorrent ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh ${container_name} bash ${script_name} qbittorrent
 
       - name: Docker - Set release asset name ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh -w /home/gh/${{ env.qbt_build_dir }}/completed ${container_name} mv -f qbittorrent-nox ${{ matrix.qbt_cross_name }}-${{ matrix.qbt_qt_version_name }}qbittorrent-nox
 
       - name: Generate artifact attestation  ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: "${{ env.qbt_build_dir }}/completed/${{ matrix.qbt_cross_name }}-${{ matrix.qbt_qt_version_name }}qbittorrent-nox"
 
       - name: Docker - Release Info ${{ inputs.distinct_id }}
-        if: env.disable_qt5 != 'yes'
         run: docker exec -u gh:gh -w /home/gh/${{ env.qbt_build_dir }}/release_info ${container_name} bash -c 'mv *.md *.json '/home/gh/${{ env.qbt_build_dir }}/completed''
 
       - name: Host - Upload libtorrent-v${{ matrix.qbt_libtorrent_version }}-qbittorrent-nox and release info artifact ${{ inputs.distinct_id }}
