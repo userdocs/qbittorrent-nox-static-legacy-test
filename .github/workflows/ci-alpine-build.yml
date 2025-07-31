@@ -123,7 +123,7 @@ jobs:
 
       - name: Docker - bootstrap_deps ${{ inputs.distinct_id }}
         if: inputs.script_name == 'qbt-nox-static.bash'
-        run: docker exec -u gh:gh ${container_name} bash ${script_name} bootstrap_deps
+        run: docker exec ${container_name} bash ${script_name} bootstrap_deps
 
       - name: Docker - Bootstrap build ${{ inputs.distinct_id }}
         run: docker exec -u gh:gh ${container_name} bash ${script_name} -bs-a
