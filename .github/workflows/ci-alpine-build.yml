@@ -64,7 +64,8 @@ jobs:
 
       - name: Download qbt-nox-static.bash
         run: |
-          curl -LO "https://raw.githubusercontent.com/userdocs/qbittorrent-nox-static/refs/heads/main/${script_name}"
+          # Make sure the branch is set to master for qbittorrent-nox-static and main qbittorrent-nox-static-test
+          curl -LO "https://raw.githubusercontent.com/userdocs/qbittorrent-nox-static/refs/heads/master/${script_name}"
           chmod +x "${script_name}"
 
       - name: Host - Create Docker template env file ${{ inputs.distinct_id }}
