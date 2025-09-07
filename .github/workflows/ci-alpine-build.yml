@@ -38,6 +38,7 @@ jobs:
         qbt_libtorrent_version: ["1.2"]
         qbt_build_tool: ["qmake"]
         qbt_qbittorrent_tag: ["release-4.3.9"]
+        qbt_boost_tag: ["boost-1.89.0"]
         include:
           - qbt_build_tool: "qmake"
             qbt_qt_version_name: ""
