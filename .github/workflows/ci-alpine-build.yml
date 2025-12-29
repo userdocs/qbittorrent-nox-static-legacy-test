@@ -36,10 +36,8 @@ jobs:
         qbt_cross_name:
           ["armel", "armhf", "armv7", "aarch64", "riscv64", "x86_64", "x86", "s390x", "powerpc", "ppc64el", "mips", "mipsel", "mips64", "mips64el"]
         qbt_libtorrent_version: ["1.2"]
-        qbt_libtorrent_tag: ["RC_1_2"]
         qbt_build_tool: ["qmake"]
         qbt_qbittorrent_tag: ["release-4.3.9"]
-        qbt_boost_tag: ["boost-1.89.0"]
         include:
           - qbt_build_tool: "qmake"
             qbt_qt_version_name: ""
@@ -64,17 +62,14 @@ jobs:
         with:
           persist-credentials: false
 
-      # - name: Download ${{ env.script_name }}
-      #   run: |
-      #     # Make sure the branch is set to master for qbittorrent-nox-static and main qbittorrent-nox-static-test
-      #     if [[ ! -f "${script_name}" ]]; then
-      #       echo "Downloading ${script_name} from userdocs/qbittorrent-nox-static"
-      #       curl -LO "https://raw.githubusercontent.com/userdocs/qbittorrent-nox-static/refs/heads/master/${script_name}"
-      #       chmod +x "${script_name}"
-      #     fi
-
-      - name: chmod
-        run:  chmod +x "${script_name}"
+      - name: Download ${{ env.script_name }}
+        run: |
+          # Make sure the branch is set to master for qbittorrent-nox-static and main qbittorrent-nox-static-test
+          if [[ ! -f "${script_name}" ]]; then
+            echo "Downloading ${script_name} from userdocs/qbittorrent-nox-static"
+            curl -LO "https://raw.githubusercontent.com/userdocs/qbittorrent-nox-static/refs/heads/master/${script_name}"
+            chmod +x "${script_name}"
+          fi
 
       - name: Host - Create Docker template env file ${{ inputs.distinct_id }}
         run: |
@@ -175,7 +170,7 @@ jobs:
         run: docker exec -w ${wd}/${qbt_build_dir}/completed "${container_name}" mv -f qbittorrent-nox "${{ matrix.qbt_cross_name }}-${{ matrix.qbt_qt_version_name }}qbittorrent-nox"
 
       - name: Generate artifact attestation  ${{ inputs.distinct_id }}
-        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        uses: actions/attest-build-provenance@00014ed6ed5efc5b1ab7f7f34a39eb55d41aa4f8 # v3.1.0
         with:
           subject-path: "${{ env.qbt_build_dir }}/completed/${{ matrix.qbt_cross_name }}-${{ matrix.qbt_qt_version_name }}qbittorrent-nox"
 
